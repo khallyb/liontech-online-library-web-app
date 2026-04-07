@@ -7,8 +7,7 @@ pipeline{
     stage('clone from github'){
       steps{
         sh "echo 'cloning the latest application version' "
-        git branch: 'April7', url: git branch: 'April7', url: 'https://github.com/khallyb/liontech-online-library-web-app.git'
-      }
+   git branch: 'April7', url: 'https://github.com/khallyb/liontech-online-library-web-app.git'      }
     }
     stage('3Test+Build'){   #update the pom.xml file 
       steps{
