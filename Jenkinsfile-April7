@@ -3,13 +3,13 @@ pipeline{
   tools {
     maven "maven3.9.2"
   }  
-  stages {
+  stages { 
     stage('clone from github'){
       steps{
         sh "echo 'cloning the latest application version' "
    git branch: 'April7', url: 'https://github.com/khallyb/liontech-online-library-web-app.git'      }
     }
-    stage('3Test+Build'){   #update the pom.xml file 
+    stage('3Test+Build'){   // update the pom.xml file
       steps{
         sh "echo 'running JUnit-test-cases' "
         sh "echo 'testing must passed to create artifacts ' "
