@@ -1,60 +1,90 @@
-pipeline{
+pipeline {
   agent any 
+
   tools {
     maven "maven3.9.2"
   }  
+
   stages { 
-    stage('clone from github'){
-      steps{
-        sh "echo 'cloning the latest application version' "
-   git branch: 'April7', url: 'https://github.com/khallyb/liontech-online-library-web-app.git'      }
+
+    stage('clone from github') {
+      steps {
+        sh "echo 'cloning the latest application version'"
+        git branch: 'April7', url: 'https://github.com/khallyb/liontech-online-library-web-app.git'
+      }
     }
-    stage('3Test+Build'){   // update the pom.xml file
-      steps{
-        sh "echo 'running JUnit-test-cases' "
-        sh "echo 'testing must passed to create artifacts ' "
+
+    stage('3Test+Build') {
+      steps {
+        sh "echo 'running JUnit-test-cases'"
+        sh "echo 'testing must passed to create artifacts'"
         sh "mvn clean package"
       }
     }
-    stage('4CodeQuality'){       
-      steps{
-        sh "echo 'Perfoming CodeQualityAnalysis' "
+
+    stage('4CodeQuality') {
+      steps {
+        sh "echo 'Performing CodeQualityAnalysis'"
         sh "mvn sonar:sonar"
       }
     }
-    stage('5uploadNexus'){
-      steps{
+
+    stage('5uploadNexus') {
+      steps {
         sh "mvn deploy"
       }
     } 
-    stage('8deploy2prod'){
-      steps{
-deploy adapters: [tomcat9(alternativeDeploymentContext: '', credentialsId: 'TOMCAT-DEPLOYRE', path: '', url: 'http://15.168.152.174:8009/')], contextPath: 'nov29', war: 'target/*war'    }
-}
-  post{
-    always{
+
+    stage('8deploy2prod') {
+      steps {
+        deploy adapters: [tomcat9(
+          alternativeDeploymentContext: '',
+          credentialsId: 'TOMCAT-DEPLOYRE',
+          path: '',
+          url: 'http://15.168.152.174:8009/'
+        )],
+        contextPath: 'nov29',
+        war: 'target/*.war'
+      }
+    }
+
+  } //
+
+  post {
+    always {
       emailext body: '''Hey guys
 Please check build status.
 
 Thanks
 LionTech 
-+1 437 215 2483''', recipientProviders: [buildUser(), developers()], subject: 'success', to: 'paypal-team@gmail.com'
++1 437 215 2483''',
+      recipientProviders: [buildUser(), developers()],
+      subject: 'Build Status',
+      to: 'paypal-team@gmail.com'
     }
-    success{
+
+    success {
       emailext body: '''Hey guys
 Good job build and deployment is successful.
 
 Thanks
 LionTech 
-+1 437 215 2483''', recipientProviders: [buildUser(), developers()], subject: 'success', to: 'paypal-team@gmail.com'
++1 437 215 2483''',
+      recipientProviders: [buildUser(), developers()],
+      subject: 'Success',
+      to: 'paypal-team@gmail.com'
     } 
-    failure{
+
+    failure {
       emailext body: '''Hey guys
-Build failed. Please resolve issues.
+Build failed. Please resolve issues. 
 
 Thanks
 LionTech 
-+1 437 215 2483''', recipientProviders: [buildUser(), developers()], subject: 'success', to: 'paypal-team@gmail.com'
++1 437 215 2483''',
+      recipientProviders: [buildUser(), developers()],
+      subject: 'Failure',
+      to: 'paypal-team@gmail.com'
     }
   } 
 }
